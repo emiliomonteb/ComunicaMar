@@ -1,0 +1,1990 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía Interactiva de Comunicaciones Marítimas</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+        
+        * {
+            font-family: 'Roboto', sans-serif;
+        }
+        
+        .maritime-gradient {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #60a5fa 100%);
+        }
+        
+        .wave-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M30 30c0-11.046-8.954-20-20-20s-20 8.954-20 20 8.954 20 20 20 20-8.954 20-20zm0 0c0 11.046 8.954 20 20 20s20-8.954 20-20-8.954-20-20-20-20 8.954-20 20z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        
+        .emergency-pulse {
+            animation: emergency-pulse 2s infinite;
+        }
+        
+        @keyframes emergency-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .nav-active {
+            background-color: #3b82f6;
+            color: white;
+        }
+        
+        .print-optimized {
+            page-break-inside: avoid;
+        }
+        
+        @media print {
+            .no-print { display: none !important; }
+            body { font-size: 12px; }
+            .print-break { page-break-before: always; }
+        }
+        
+        .scrollbar-hide {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="maritime-gradient wave-pattern text-white py-4 px-6 shadow-lg">
+        <div class="flex flex-col lg:flex-row justify-between items-center">
+            <div class="flex items-center mb-4 lg:mb-0">
+                <i class="fas fa-anchor text-3xl mr-3"></i>
+                <h1 class="text-2xl lg:text-3xl font-bold">Comunicaciones Marítimas</h1>
+            </div>
+            
+            <!-- Search Bar -->
+            <div class="relative w-full lg:w-96">
+                <input 
+                    type="text" 
+                    id="searchInput" 
+                    placeholder="Buscar procedimientos, canales, términos..."
+                    class="w-full px-4 py-2 pl-10 pr-12 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                >
+                <i class="fas fa-search absolute left-3 top-3 text-gray-500"></i>
+                <button onclick="clearSearch()" class="absolute right-3 top-2 text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Emergency Quick Actions -->
+        <div class="mt-4 flex flex-wrap gap-2 justify-center lg:justify-start">
+            <button onclick="showSection('mayday')" class="emergency-pulse bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg font-bold text-sm">
+                <i class="fas fa-exclamation-triangle mr-1"></i> MAYDAY
+            </button>
+            <button onclick="showSection('panpan')" class="bg-orange-500 hover:bg-orange-600 px-4 py-2 rounded-lg font-bold text-sm">
+                <i class="fas fa-exclamation mr-1"></i> PAN-PAN
+            </button>
+            <button onclick="showSection('securite')" class="bg-yellow-500 hover:bg-yellow-600 px-4 py-2 rounded-lg font-bold text-sm">
+                <i class="fas fa-info-circle mr-1"></i> SECURITE
+            </button>
+            <button onclick="openTimer()" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg font-bold text-sm">
+                <i class="fas fa-clock mr-1"></i> TIMER
+            </button>
+        </div>
+    </header>
+
+    <div class="flex">
+        <!-- Sidebar Navigation -->
+        <nav id="sidebar" class="w-64 bg-blue-900 text-white min-h-screen p-4 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out fixed lg:sticky top-0 z-50">
+            <div class="mb-6">
+                <h2 class="text-xl font-bold mb-4">Navegación</h2>
+                
+                <div class="space-y-2">
+                    <button onclick="showSection('rutina')" class="nav-btn w-full text-left p-3 rounded-lg hover:bg-blue-800 transition-colors flex items-center">
+                        <i class="fas fa-radio mr-3"></i>
+                        <span>Llamadas de Rutina</span>
+                    </button>
+                    
+                    <button onclick="showSection('securite')" class="nav-btn w-full text-left p-3 rounded-lg hover:bg-blue-800 transition-colors flex items-center">
+                        <i class="fas fa-info-circle mr-3 text-yellow-400"></i>
+                        <span>SECURITE</span>
+                    </button>
+                    
+                    <button onclick="showSection('panpan')" class="nav-btn w-full text-left p-3 rounded-lg hover:bg-blue-800 transition-colors flex items-center">
+                        <i class="fas fa-exclamation mr-3 text-orange-400"></i>
+                        <span>PAN-PAN</span>
+                    </button>
+                    
+                    <button onclick="showSection('mayday')" class="nav-btn w-full text-left p-3 rounded-lg hover:bg-blue-800 transition-colors flex items-center">
+                        <i class="fas fa-exclamation-triangle mr-3 text-red-400"></i>
+                        <span>MAYDAY</span>
+                    </button>
+                    
+                    <hr class="my-4 border-blue-700">
+                    
+                    <button onclick="showSection('tools')" class="nav-btn w-full text-left p-3 rounded-lg hover:bg-blue-800 transition-colors flex items-center">
+                        <i class="fas fa-tools mr-3"></i>
+                        <span>Herramientas</span>
+                    </button>
+                    
+                    <button onclick="showSection('reference')" class="nav-btn w-full text-left p-3 rounded-lg hover:bg-blue-800 transition-colors flex items-center">
+                        <i class="fas fa-table mr-3"></i>
+                        <span>Referencia Rápida</span>
+                    </button>
+                    
+                    <button onclick="showSection('glossary')" class="nav-btn w-full text-left p-3 rounded-lg hover:bg-blue-800 transition-colors flex items-center">
+                        <i class="fas fa-book mr-3"></i>
+                        <span>Glosario</span>
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Mobile menu toggle -->
+        <button onclick="toggleSidebar()" class="lg:hidden fixed top-4 left-4 z-50 bg-blue-600 text-white p-2 rounded-md no-print">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-6 lg:ml-0">
+            
+            <!-- Llamadas de Rutina Section -->
+            <section id="rutina" class="content-section">
+                <h2 class="text-3xl font-bold text-blue-900 mb-6 flex items-center">
+                    <i class="fas fa-radio mr-3"></i>
+                    Llamadas de Rutina
+                </h2>
+                
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                    <h3 class="text-xl font-semibold mb-4 text-blue-800">¿Qué son las llamadas de rutina?</h3>
+                    <p class="mb-4 text-gray-700">
+                        Las llamadas de rutina son comunicaciones marítimas normales que no implican urgencia. 
+                        Son para solicitar o proporcionar información regular y prevalecen sobre las funciones normales.
+                    </p>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-blue-800 mb-3">Ejemplos de llamadas de rutina:</h4>
+                            <ul class="space-y-2">
+                                <li class="flex items-center"><i class="fas fa-check text-green-600 mr-2"></i> Pedir previsión meteorológica</li>
+                                <li class="flex items-center"><i class="fas fa-check text-green-600 mr-2"></i> Prueba de radio con una costera</li>
+                                <li class="flex items-center"><i class="fas fa-check text-green-600 mr-2"></i> Solicitar salvoconducto para inmersión</li>
+                                <li class="flex items-center"><i class="fas fa-check text-green-600 mr-2"></i> Informar llegada a club náutico</li>
+                                <li class="flex items-center"><i class="fas fa-check text-green-600 mr-2"></i> Comunicarse con otro barco</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-yellow-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-yellow-800 mb-3">Protocolo General:</h4>
+                            <ol class="space-y-2">
+                                <li><span class="font-semibold">1.</span> Sintonizar Canal 16</li>
+                                <li><span class="font-semibold">2.</span> Verificar canal libre (1-2 min)</li>
+                                <li><span class="font-semibold">3.</span> Contactar destinatario</li>
+                                <li><span class="font-semibold">4.</span> Cambiar a canal de trabajo</li>
+                                <li><span class="font-semibold">5.</span> Transmitir mensaje</li>
+                                <li><span class="font-semibold">6.</span> Finalizar con "terminado"</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comunicación con Estación Costera -->
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                    <h3 class="text-xl font-semibold mb-4 text-blue-800 flex items-center">
+                        <i class="fas fa-tower-broadcast mr-2"></i>
+                        Comunicación con Estación Costera
+                    </h3>
+                    
+                    <div class="bg-gradient-to-r from-blue-100 to-blue-50 p-4 rounded-lg mb-4">
+                        <h4 class="font-semibold mb-3">Procedimiento paso a paso:</h4>
+                        <div class="space-y-3">
+                            <div class="flex items-start">
+                                <span class="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold mr-3 mt-1">1</span>
+                                <div>
+                                    <p class="font-semibold">Iniciar llamada en Canal 16:</p>
+                                    <div class="bg-gray-100 p-3 rounded mt-2 font-mono text-sm">
+                                        "Ibiza Radio, Ibiza Radio, aquí Poseidón, Poseidón, cambio"
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <span class="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold mr-3 mt-1">2</span>
+                                <div>
+                                    <p class="font-semibold">Respuesta de la costera:</p>
+                                    <div class="bg-gray-100 p-3 rounded mt-2 font-mono text-sm">
+                                        "Poseidón, Poseidón, aquí Ibiza Radio, pase al canal 3, cambio"
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <span class="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold mr-3 mt-1">3</span>
+                                <div>
+                                    <p class="font-semibold">Cambiar al canal de trabajo (Canal 3)</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <span class="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold mr-3 mt-1">4</span>
+                                <div>
+                                    <p class="font-semibold">Reestablecer comunicación:</p>
+                                    <div class="bg-gray-100 p-3 rounded mt-2 font-mono text-sm">
+                                        "Ibiza Radio, Ibiza Radio, aquí Poseidón, Poseidón, cambio"
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <span class="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold mr-3 mt-1">5</span>
+                                <div>
+                                    <p class="font-semibold">Transmitir mensaje:</p>
+                                    <div class="bg-gray-100 p-3 rounded mt-2 font-mono text-sm">
+                                        "Quería hacer una prueba radio, cambio"
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <span class="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold mr-3 mt-1">6</span>
+                                <div>
+                                    <p class="font-semibold">Finalizar:</p>
+                                    <div class="bg-gray-100 p-3 rounded mt-2 font-mono text-sm">
+                                        "Ibiza Radio, muchas gracias, Poseidón, terminado"
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comunicación Barco a Barco -->
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                    <h3 class="text-xl font-semibold mb-4 text-blue-800 flex items-center">
+                        <i class="fas fa-ship mr-2"></i>
+                        Comunicación Barco a Barco
+                    </h3>
+                    
+                    <div class="bg-green-50 p-4 rounded-lg mb-4">
+                        <div class="flex items-center mb-3">
+                            <i class="fas fa-info-circle text-green-600 mr-2"></i>
+                            <span class="font-semibold text-green-800">Diferencia clave: NO usar Canal 16</span>
+                        </div>
+                        <p class="text-green-700">Se llama directamente en un canal de trabajo simplex.</p>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <h4 class="font-semibold text-blue-800 mb-3">Canales recomendados (simplex):</h4>
+                            <div class="space-y-2">
+                                <div class="bg-blue-100 p-2 rounded flex justify-between">
+                                    <span>Canal 68</span>
+                                    <i class="fas fa-check text-green-600"></i>
+                                </div>
+                                <div class="bg-blue-100 p-2 rounded flex justify-between">
+                                    <span>Canal 70</span>
+                                    <i class="fas fa-check text-green-600"></i>
+                                </div>
+                                <div class="bg-blue-100 p-2 rounded flex justify-between">
+                                    <span>Canal 72</span>
+                                    <i class="fas fa-check text-green-600"></i>
+                                </div>
+                                <div class="bg-blue-100 p-2 rounded flex justify-between">
+                                    <span>Canal 77</span>
+                                    <i class="fas fa-check text-green-600"></i>
+                                </div>
+                                <div class="bg-blue-100 p-2 rounded flex justify-between">
+                                    <span>Canal 78</span>
+                                    <i class="fas fa-check text-green-600"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-semibold text-red-800 mb-3">⚠️ NO usar canales dúplex:</h4>
+                            <div class="bg-red-50 p-3 rounded">
+                                <p class="text-red-700 text-sm">Los canales dúplex (como Canal 3) tienen dos frecuencias y solo funcionan con estaciones costeras. No usar para comunicación barco a barco.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 bg-gradient-to-r from-green-100 to-green-50 p-4 rounded-lg">
+                        <h4 class="font-semibold mb-3">Ejemplo de llamada barco a barco:</h4>
+                        <div class="space-y-2 font-mono text-sm">
+                            <div class="bg-gray-100 p-2 rounded">
+                                <span class="text-blue-600">Tu barco:</span> "Antares 163, Antares 163, aquí Poseidón, Poseidón, cambio"
+                            </div>
+                            <div class="bg-gray-100 p-2 rounded">
+                                <span class="text-green-600">Respuesta:</span> "Poseidón, aquí Antares, canal 72, cambio"
+                            </div>
+                            <div class="bg-gray-100 p-2 rounded">
+                                <span class="text-blue-600">Confirmación:</span> "Antares, aquí Poseidón, canal 72"
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Checklist para Rutina -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-semibold mb-4 text-blue-800 flex items-center">
+                        <i class="fas fa-clipboard-check mr-2"></i>
+                        Checklist - Llamadas de Rutina
+                    </h3>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <h4 class="font-semibold mb-3">Antes de llamar:</h4>
+                            <div class="space-y-2">
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 h-4 w-4 text-blue-600">
+                                    <span>Radio sintonizada al canal correcto</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 h-4 w-4 text-blue-600">
+                                    <span>Canal libre (escuchado 1-2 minutos)</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 h-4 w-4 text-blue-600">
+                                    <span>Mensaje preparado</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 h-4 w-4 text-blue-600">
+                                    <span>Nombre del destinatario claro</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-semibold mb-3">Durante la llamada:</h4>
+                            <div class="space-y-2">
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 h-4 w-4 text-blue-600">
+                                    <span>Hablar claro y pausado</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 h-4 w-4 text-blue-600">
+                                    <span>Repetir nombres 2 veces</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 h-4 w-4 text-blue-600">
+                                    <span>Usar "cambio" para dar la palabra</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 h-4 w-4 text-blue-600">
+                                    <span>Finalizar con "terminado"</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECURITE Section -->
+            <section id="securite" class="content-section hidden">
+                <h2 class="text-3xl font-bold text-yellow-700 mb-6 flex items-center">
+                    <i class="fas fa-info-circle mr-3"></i>
+                    Mensajes SECURITE
+                </h2>
+                
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                    <div class="bg-yellow-100 border-l-4 border-yellow-500 p-4 mb-6">
+                        <h3 class="text-xl font-semibold mb-2 text-yellow-800">¿Qué es SECURITE?</h3>
+                        <p class="text-yellow-700">
+                            Mensajes que contienen información importante para la navegación. No implican peligro inminente, 
+                            pero alertan sobre situaciones que pueden afectar la seguridad de la navegación.
+                        </p>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-yellow-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-yellow-800 mb-3">Ejemplos típicos:</h4>
+                            <ul class="space-y-2">
+                                <li class="flex items-center"><i class="fas fa-exclamation-triangle text-yellow-600 mr-2"></i> Avisos de peligros para navegación</li>
+                                <li class="flex items-center"><i class="fas fa-exclamation-triangle text-yellow-600 mr-2"></i> Contenedor flotando</li>
+                                <li class="flex items-center"><i class="fas fa-exclamation-triangle text-yellow-600 mr-2"></i> Operaciones especiales en zona</li>
+                                <li class="flex items-center"><i class="fas fa-exclamation-triangle text-yellow-600 mr-2"></i> Avisos tecnológicos</li>
+                                <li class="flex items-center"><i class="fas fa-exclamation-triangle text-yellow-600 mr-2"></i> Situaciones costeras</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-blue-800 mb-3">Características:</h4>
+                            <ul class="space-y-2">
+                                <li class="flex items-center"><i class="fas fa-radio text-blue-600 mr-2"></i> Se inicia en Canal 16</li>
+                                <li class="flex items-center"><i class="fas fa-volume-up text-blue-600 mr-2"></i> Máxima potencia (25W)</li>
+                                <li class="flex items-center"><i class="fas fa-users text-blue-600 mr-2"></i> Para todas las estaciones</li>
+                                <li class="flex items-center"><i class="fas fa-arrow-right text-blue-600 mr-2"></i> Se pasa a canal de trabajo</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Protocolo SECURITE -->
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                    <h3 class="text-xl font-semibold mb-4 text-yellow-800 flex items-center">
+                        <i class="fas fa-list-ol mr-2"></i>
+                        Protocolo para Mensaje SECURITE
+                    </h3>
+                    
+                    <div class="bg-gradient-to-r from-yellow-100 to-orange-50 p-4 rounded-lg">
+                        <div class="space-y-4">
+                            <div class="flex items-start">
+                                <span class="bg-yellow-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3 mt-1">1</span>
+                                <div>
+                                    <p class="font-semibold">Sintonización y Potencia:</p>
+                                    <ul class="ml-4 mt-2 space-y-1 text-sm">
+                                        <li>• Canal 16 (socorro y llamada)</li>
+                                        <li>• Máxima potencia: 25 vatios</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <span class="bg-yellow-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3 mt-1">2</span>
+                                <div>
+                                    <p class="font-semibold">Inicio de la llamada en Canal 16:</p>
+                                    <div class="bg-white p-3 rounded mt-2 font-mono text-sm border-l-4 border-yellow-500">
+                                        "SECURITE, SECURITE, SECURITE<br>
+                                        a todas las estaciones, todas las estaciones, todas las estaciones<br>
+                                        aquí Poseidón, Poseidón, Poseidón"
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <span class="bg-yellow-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3 mt-1">3</span>
+                                <div>
+                                    <p class="font-semibold">Transición a canal de trabajo:</p>
+                                    <p class="text-sm mt-1">La estación costera indicará el canal de trabajo para transmitir el aviso completo.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <span class="bg-yellow-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3 mt-1">4</span>
+                                <div>
+                                    <p class="font-semibold">Mensaje completo en canal de trabajo:</p>
+                                    <div class="bg-white p-3 rounded mt-2 font-mono text-sm border-l-4 border-yellow-500">
+                                        "SECURITE, SECURITE, SECURITE<br>
+                                        a todas las estaciones, todas las estaciones, todas las estaciones<br>
+                                        aquí Poseidón, Poseidón, Poseidón<br>
+                                        <br>
+                                        Aviso sobre la navegación: hay un contenedor flotando a<br>
+                                        demora 72 grados, a 4 millas náuticas de Cabo de la Nao"
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Consideraciones SECURITE -->
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                    <h3 class="text-xl font-semibold mb-4 text-yellow-800 flex items-center">
+                        <i class="fas fa-lightbulb mr-2"></i>
+                        Consideraciones Importantes
+                    </h3>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-blue-800 mb-3">Claridad y Comprensión:</h4>
+                            <ul class="space-y-2 text-sm">
+                                <li>• Hablar claro, pausado y comprensible</li>
+                                <li>• Especial atención al dar coordenadas</li>
+                                <li>• Información precisa sobre el peligro</li>
+                                <li>• Similar claridad que Mayday y Pan-Pan</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-green-800 mb-3">Recomendación Inteligente:</h4>
+                            <p class="text-sm mb-2">
+                                Es más efectivo comunicar el peligro a una estación costera para que ellos retransmitan el SECURITE.
+                            </p>
+                            <ul class="space-y-1 text-sm">
+                                <li>• Mayor alcance de difusión</li>
+                                <li>• Llega a más estaciones y barcos</li>
+                                <li>• Especialmente útil para contenedores flotando</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Checklist SECURITE -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-semibold mb-4 text-yellow-800 flex items-center">
+                        <i class="fas fa-clipboard-check mr-2"></i>
+                        Checklist - Mensaje SECURITE
+                    </h3>
+                    
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <div>
+                            <h4 class="font-semibold mb-3">Preparación:</h4>
+                            <div class="space-y-2">
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 h-4 w-4 text-yellow-600">
+                                    <span class="text-sm">Canal 16 sintonizado</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 h-4 w-4 text-yellow-600">
+                                    <span class="text-sm">Potencia máxima (25W)</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 h-4 w-4 text-yellow-600">
+                                    <span class="text-sm">Información del peligro clara</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 h-4 w-4 text-yellow-600">
+                                    <span class="text-sm">Coordenadas precisas</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-semibold mb-3">Transmisión:</h4>
+                            <div class="space-y-2">
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 h-4 w-4 text-yellow-600">
+                                    <span class="text-sm">SECURITE × 3</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 h-4 w-4 text-yellow-600">
+                                    <span class="text-sm">A todas las estaciones × 3</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 h-4 w-4 text-yellow-600">
+                                    <span class="text-sm">Nombre del barco × 3</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 h-4 w-4 text-yellow-600">
+                                    <span class="text-sm">Cambio a canal trabajo</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-semibold mb-3">Mensaje:</h4>
+                            <div class="space-y-2">
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 h-4 w-4 text-yellow-600">
+                                    <span class="text-sm">Repetir encabezado</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 h-4 w-4 text-yellow-600">
+                                    <span class="text-sm">Aviso navegación claro</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 h-4 w-4 text-yellow-600">
+                                    <span class="text-sm">Coordenadas exactas</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 h-4 w-4 text-yellow-600">
+                                    <span class="text-sm">Descripción del peligro</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PAN-PAN Section -->
+            <section id="panpan" class="content-section hidden">
+                <h2 class="text-3xl font-bold text-orange-600 mb-6 flex items-center">
+                    <i class="fas fa-exclamation mr-3"></i>
+                    Mensajes PAN-PAN
+                </h2>
+                
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                    <div class="bg-orange-100 border-l-4 border-orange-500 p-4 mb-6">
+                        <h3 class="text-xl font-semibold mb-2 text-orange-800">¿Qué es PAN-PAN?</h3>
+                        <p class="text-orange-700">
+                            <strong>Llamada de urgencia</strong> (no de socorro). Se usa cuando no hay peligro inminente para la vida 
+                            o la embarcación, pero sí existe una situación que requiere atención urgente o que podría deteriorarse rápidamente.
+                        </p>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-orange-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-orange-800 mb-3">Situaciones típicas para PAN-PAN:</h4>
+                            <ul class="space-y-2">
+                                <li class="flex items-start"><i class="fas fa-cog text-orange-600 mr-2 mt-1"></i> Avería de motor (solucionable o necesita remolque)</li>
+                                <li class="flex items-start"><i class="fas fa-swimmer text-orange-600 mr-2 mt-1"></i> Persona en agua con hipotermia (sin peligro grave inmediato)</li>
+                                <li class="flex items-start"><i class="fas fa-life-ring text-orange-600 mr-2 mt-1"></i> Operación de rescate en zona de tráfico intenso</li>
+                                <li class="flex items-start"><i class="fas fa-exclamation-triangle text-orange-600 mr-2 mt-1"></i> Situaciones que pueden afectar a otras embarcaciones</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-red-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-red-800 mb-3">⚠️ NO es PAN-PAN cuando:</h4>
+                            <ul class="space-y-2">
+                                <li class="flex items-start"><i class="fas fa-times text-red-600 mr-2 mt-1"></i> La embarcación se está hundiendo</li>
+                                <li class="flex items-start"><i class="fas fa-times text-red-600 mr-2 mt-1"></i> Incendio incontrolable a bordo</li>
+                                <li class="flex items-start"><i class="fas fa-times text-red-600 mr-2 mt-1"></i> Peligro grave e inminente para la vida</li>
+                                <li class="flex items-start"><i class="fas fa-arrow-right text-red-600 mr-2 mt-1"></i> <span class="text-red-700">Usar MAYDAY en estos casos</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Protocolo PAN-PAN -->
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                    <h3 class="text-xl font-semibold mb-4 text-orange-800 flex items-center">
+                        <i class="fas fa-list-ol mr-2"></i>
+                        Protocolo para Mensaje PAN-PAN
+                    </h3>
+                    
+                    <div class="bg-gradient-to-r from-orange-100 to-red-50 p-4 rounded-lg">
+                        <div class="space-y-4">
+                            <div class="flex items-start">
+                                <span class="bg-orange-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3 mt-1">1</span>
+                                <div>
+                                    <p class="font-semibold">Sintonización y Potencia:</p>
+                                    <ul class="ml-4 mt-2 space-y-1 text-sm">
+                                        <li>• Canal 16 (socorro y llamada)</li>
+                                        <li>• Máxima potencia: 25 vatios</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <span class="bg-orange-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3 mt-1">2</span>
+                                <div>
+                                    <p class="font-semibold">Inicio de la llamada (Canal 16):</p>
+                                    <div class="bg-white p-3 rounded mt-2 font-mono text-sm border-l-4 border-orange-500">
+                                        "PAN-PAN, PAN-PAN, PAN-PAN"
+                                    </div>
+                                    <p class="text-sm mt-2"><strong>Destinatario:</strong> Puede ser específico o general</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <span class="bg-orange-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3 mt-1">3</span>
+                                <div>
+                                    <p class="font-semibold">Opciones de destinatario:</p>
+                                    <div class="mt-2 space-y-2">
+                                        <div class="bg-blue-50 p-2 rounded text-sm">
+                                            <strong>Específico:</strong> "Salvamento Marítimo, Salvamento Marítimo, Salvamento Marítimo"
+                                        </div>
+                                        <div class="bg-green-50 p-2 rounded text-sm">
+                                            <strong>General:</strong> "a todas las estaciones, todas las estaciones, todas las estaciones"
+                                        </div>
+                                        <div class="bg-gray-50 p-2 rounded text-sm">
+                                            <strong>Alternativas:</strong> "llamada general × 3" o "a todos los barcos × 3"
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <span class="bg-orange-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3 mt-1">4</span>
+                                <div>
+                                    <p class="font-semibold">Identificación + Mensaje completo:</p>
+                                    <div class="bg-white p-3 rounded mt-2 font-mono text-sm border-l-4 border-orange-500">
+                                        "aquí Poseidón, Poseidón, Poseidón<br><br>
+                                        <strong>POSICIÓN:</strong><br>
+                                        demora 72 grados, Cabo de la Nao, distancia 5 millas náuticas<br>
+                                        (También: latitud/longitud si necesario)<br><br>
+                                        <strong>NATURALEZA DE LA URGENCIA:</strong><br>
+                                        tenemos el motor en avería y necesitamos urgentemente un remolque<br><br>
+                                        cambio"
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Diferencias importantes -->
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                    <h3 class="text-xl font-semibold mb-4 text-orange-800 flex items-center">
+                        <i class="fas fa-balance-scale mr-2"></i>
+                        Diferencias con Otros Mensajes
+                    </h3>
+                    
+                    <div class="grid md:grid-cols-3 gap-4">
+                        <div class="bg-red-50 border border-red-200 p-4 rounded-lg">
+                            <h4 class="font-semibold text-red-800 mb-2 flex items-center">
+                                <i class="fas fa-exclamation-triangle mr-2"></i>
+                                vs MAYDAY
+                            </h4>
+                            <ul class="text-sm space-y-1">
+                                <li>• MAYDAY: peligro <strong>grave e inminente</strong></li>
+                                <li>• PAN-PAN: urgencia <strong>sin peligro inmediato</strong></li>
+                                <li>• MAYDAY: automáticamente para todos</li>
+                                <li>• PAN-PAN: puede tener destinatario específico</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-blue-50 border border-blue-200 p-4 rounded-lg">
+                            <h4 class="font-semibold text-blue-800 mb-2 flex items-center">
+                                <i class="fas fa-radio mr-2"></i>
+                                vs Rutina/SECURITE
+                            </h4>
+                            <ul class="text-sm space-y-1">
+                                <li>• Rutina/SECURITE: pasan a canal trabajo</li>
+                                <li>• PAN-PAN: mensaje completo en Canal 16</li>
+                                <li>• Necesidad de comunicación rápida y directa</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-green-50 border border-green-200 p-4 rounded-lg">
+                            <h4 class="font-semibold text-green-800 mb-2 flex items-center">
+                                <i class="fas fa-map-marker-alt mr-2"></i>
+                                Información Crítica
+                            </h4>
+                            <ul class="text-sm space-y-1">
+                                <li>• <strong>Posición:</strong> información más importante</li>
+                                <li>• Demora y distancia a punto notable</li>
+                                <li>• Coordenadas exactas si es posible</li>
+                                <li>• Descripción clara de la urgencia</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ejemplos prácticos -->
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                    <h3 class="text-xl font-semibold mb-4 text-orange-800 flex items-center">
+                        <i class="fas fa-microphone mr-2"></i>
+                        Ejemplos Prácticos
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <div class="bg-gradient-to-r from-orange-50 to-yellow-50 p-4 rounded-lg border-l-4 border-orange-500">
+                            <h4 class="font-semibold mb-2">Ejemplo 1: Avería de motor</h4>
+                            <div class="bg-gray-100 p-3 rounded font-mono text-sm">
+                                "PAN-PAN, PAN-PAN, PAN-PAN<br>
+                                Salvamento Marítimo, Salvamento Marítimo, Salvamento Marítimo<br>
+                                aquí Poseidón, Poseidón, Poseidón<br><br>
+                                demora 68 grados, Cabo de la Nao, distancia 3.2 millas náuticas<br>
+                                tenemos el motor en avería y estamos intentando solucionar el problema<br>
+                                cambio"
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gradient-to-r from-blue-50 to-orange-50 p-4 rounded-lg border-l-4 border-blue-500">
+                            <h4 class="font-semibold mb-2">Ejemplo 2: Operación de rescate</h4>
+                            <div class="bg-gray-100 p-3 rounded font-mono text-sm">
+                                "PAN-PAN, PAN-PAN, PAN-PAN<br>
+                                a todos los barcos, todos los barcos, todos los barcos<br>
+                                aquí Poseidón, Poseidón, Poseidón<br><br>
+                                demora 45 grados, Puerto de Alicante, distancia 2 millas náuticas<br>
+                                estamos en una operación de rescate de una persona al agua<br>
+                                cambio"
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Checklist PAN-PAN -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-semibold mb-4 text-orange-800 flex items-center">
+                        <i class="fas fa-clipboard-check mr-2"></i>
+                        Checklist - Mensaje PAN-PAN
+                    </h3>
+                    
+                    <div class="grid md:grid-cols-4 gap-4">
+                        <div>
+                            <h4 class="font-semibold mb-3">Preparación:</h4>
+                            <div class="space-y-2">
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 h-4 w-4 text-orange-600">
+                                    <span class="text-sm">Canal 16</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 h-4 w-4 text-orange-600">
+                                    <span class="text-sm">Máxima potencia</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 h-4 w-4 text-orange-600">
+                                    <span class="text-sm">Posición exacta</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-semibold mb-3">Llamada:</h4>
+                            <div class="space-y-2">
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 h-4 w-4 text-orange-600">
+                                    <span class="text-sm">PAN-PAN × 3</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 h-4 w-4 text-orange-600">
+                                    <span class="text-sm">Destinatario × 3</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 h-4 w-4 text-orange-600">
+                                    <span class="text-sm">Nombre barco × 3</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-semibold mb-3">Posición:</h4>
+                            <div class="space-y-2">
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 h-4 w-4 text-orange-600">
+                                    <span class="text-sm">Demora y distancia</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 h-4 w-4 text-orange-600">
+                                    <span class="text-sm">Punto notable</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 h-4 w-4 text-orange-600">
+                                    <span class="text-sm">Coordenadas si es posible</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-semibold mb-3">Finalización:</h4>
+                            <div class="space-y-2">
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 h-4 w-4 text-orange-600">
+                                    <span class="text-sm">Naturaleza urgencia</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 h-4 w-4 text-orange-600">
+                                    <span class="text-sm">POB si hay tiempo</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 h-4 w-4 text-orange-600">
+                                    <span class="text-sm">Terminar con "cambio"</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- MAYDAY Section -->
+            <section id="mayday" class="content-section hidden">
+                <h2 class="text-3xl font-bold text-red-600 mb-6 flex items-center">
+                    <i class="fas fa-exclamation-triangle mr-3 emergency-pulse"></i>
+                    Mensajes MAYDAY
+                </h2>
+                
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                    <div class="bg-red-100 border-l-4 border-red-500 p-4 mb-6">
+                        <h3 class="text-xl font-semibold mb-2 text-red-800 flex items-center">
+                            <i class="fas fa-skull-crossbones mr-2"></i>
+                            MÁXIMA IMPORTANCIA - PELIGRO DE VIDA
+                        </h3>
+                        <p class="text-red-700">
+                            <strong>Llamada de socorro</strong> exclusiva para situaciones de <strong>peligro grave e inminente</strong> 
+                            para la vida de las personas o para la embarcación misma.
+                        </p>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-red-50 p-4 rounded-lg border border-red-200">
+                            <h4 class="font-semibold text-red-800 mb-3 flex items-center">
+                                <i class="fas fa-fire mr-2"></i>
+                                Situaciones para MAYDAY:
+                            </h4>
+                            <ul class="space-y-2">
+                                <li class="flex items-start"><i class="fas fa-ship text-red-600 mr-2 mt-1"></i> La embarcación se está hundiendo</li>
+                                <li class="flex items-start"><i class="fas fa-fire-alt text-red-600 mr-2 mt-1"></i> Incendio incontrolable a bordo</li>
+                                <li class="flex items-start"><i class="fas fa-skull-crossbones text-red-600 mr-2 mt-1"></i> Ataque de piratas</li>
+                                <li class="flex items-start"><i class="fas fa-swimmer text-red-600 mr-2 mt-1"></i> Persona en agua en peligro inminente</li>
+                                <li class="flex items-start"><i class="fas fa-life-ring text-red-600 mr-2 mt-1"></i> Abandonando el barco</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                            <h4 class="font-semibold text-yellow-800 mb-3 flex items-center">
+                                <i class="fas fa-satellite-dish mr-2"></i>
+                                ANTES de la llamada de voz:
+                            </h4>
+                            <div class="bg-yellow-100 p-3 rounded mb-3">
+                                <p class="text-sm text-yellow-800"><strong>¡IMPORTANTE!</strong> Si tienes tiempo, pulsa el botón de socorro DSC:</p>
+                                <ul class="mt-2 space-y-1 text-sm">
+                                    <li>• Mantener pulsado ~4 segundos</li>
+                                    <li>• Seleccionar tipo de emergencia si es posible</li>
+                                    <li>• Transmite MMSI automáticamente</li>
+                                </ul>
+                            </div>
+                            <p class="text-sm text-yellow-700">El DSC alerta digitalmente antes de la llamada de voz</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Protocolo MAYDAY -->
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                    <h3 class="text-xl font-semibold mb-4 text-red-800 flex items-center">
+                        <i class="fas fa-list-ol mr-2"></i>
+                        Protocolo MAYDAY - ¡MEMORIZAR!
+                    </h3>
+                    
+                    <div class="bg-red-50 p-2 rounded mb-4 text-center">
+                        <p class="text-red-800 font-semibold">⚠️ Recomendación: Tener este procedimiento escrito y visible cerca de la radio ⚠️</p>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-red-100 to-orange-50 p-4 rounded-lg">
+                        <h4 class="text-lg font-semibold mb-3 text-red-800 flex items-center">
+                            <i class="fas fa-microphone-alt mr-2"></i>
+                            PARTE 1: LLAMADA INICIAL
+                        </h4>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-start">
+                                <span class="bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3 mt-1">1</span>
+                                <div>
+                                    <p class="font-semibold">Sintonización y Potencia:</p>
+                                    <ul class="ml-4 mt-2 space-y-1 text-sm">
+                                        <li>• Canal 16 (socorro y llamada)</li>
+                                        <li>• <strong>MÁXIMA POTENCIA</strong> (25W o máxima disponible)</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <span class="bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3 mt-1">2</span>
+                                <div>
+                                    <p class="font-semibold">Estructura de la Llamada:</p>
+                                    <div class="bg-white p-4 rounded mt-2 font-mono text-sm border-l-4 border-red-500">
+                                        <div class="space-y-1">
+                                            <div>"<strong>MAYDAY, MAYDAY, MAYDAY</strong>"</div>
+                                            <div>"<strong>THIS IS</strong>"</div>
+                                            <div>"<strong>POSEIDÓN, POSEIDÓN, POSEIDÓN</strong>" (nombre barco × 3)</div>
+                                            <div>"<strong>[Call Sign]</strong>" (distintivo de llamada)</div>
+                                            <div>"<strong>[MMSI]</strong>" (número identificación radio)</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <h4 class="text-lg font-semibold mt-6 mb-3 text-red-800 flex items-center">
+                            <i class="fas fa-exclamation-triangle mr-2"></i>
+                            PARTE 2: MENSAJE (Inmediatamente después)
+                        </h4>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-start">
+                                <span class="bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3 mt-1">3</span>
+                                <div>
+                                    <p class="font-semibold">Mensaje Completo:</p>
+                                    <div class="bg-white p-4 rounded mt-2 font-mono text-sm border-l-4 border-red-500">
+                                        <div class="space-y-2">
+                                            <div>"<strong>MAYDAY</strong>"</div>
+                                            <div>"<strong>POSEIDÓN</strong>, [Call Sign], [MMSI]"</div>
+                                            <div class="bg-yellow-100 p-2 rounded border-l-2 border-yellow-500">
+                                                <strong>POSICIÓN (INFORMACIÓN MÁS VITAL):</strong><br>
+                                                - Demora y distancia a punto notable<br>
+                                                - Ejemplo: "demora 68 grados, Cabo de la Nao, distancia 8.5 millas náuticas"<br>
+                                                - Si es posible: latitud y longitud (repetir 2 veces)
+                                            </div>
+                                            <div class="bg-red-100 p-2 rounded border-l-2 border-red-500">
+                                                <strong>NATURALEZA DEL SOCORRO:</strong><br>
+                                                - "incendio a bordo"<br>
+                                                - "estamos abandonando el barco"<br>
+                                                - "hemos activado la radiobaliza satelital"
+                                            </div>
+                                            <div><strong>PERSONAS A BORDO (POB):</strong> "3 personas a bordo" (si hay tiempo)</div>
+                                            <div>"<strong>OVER</strong>" (o "cambio")</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ejemplo completo MAYDAY -->
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                    <h3 class="text-xl font-semibold mb-4 text-red-800 flex items-center">
+                        <i class="fas fa-microphone mr-2"></i>
+                        Ejemplo Completo de MAYDAY
+                    </h3>
+                    
+                    <div class="bg-red-50 p-4 rounded-lg border-2 border-red-200">
+                        <h4 class="font-semibold mb-3 text-red-800">Situación: Incendio a bordo, 3 personas</h4>
+                        <div class="bg-gray-900 text-green-400 p-4 rounded font-mono text-sm">
+                            <div class="space-y-1">
+                                <div><span class="text-red-400">"MAYDAY, MAYDAY, MAYDAY"</span></div>
+                                <div><span class="text-white">"THIS IS"</span></div>
+                                <div><span class="text-blue-400">"POSEIDÓN, POSEIDÓN, POSEIDÓN"</span></div>
+                                <div><span class="text-yellow-400">"Call Sign: EA3ABC"</span></div>
+                                <div><span class="text-yellow-400">"MMSI: 224123456"</span></div>
+                                <div class="pt-2"><span class="text-red-400">"MAYDAY"</span></div>
+                                <div><span class="text-blue-400">"POSEIDÓN"</span>, <span class="text-yellow-400">EA3ABC, 224123456</span></div>
+                                <div class="text-orange-400 font-bold">
+                                    "demora 68 grados, Cabo de la Nao,<br>
+                                    distancia 8.5 millas náuticas"
+                                </div>
+                                <div class="text-red-300 font-bold">"incendio a bordo"</div>
+                                <div><span class="text-white">"3 personas a bordo"</span></div>
+                                <div><span class="text-green-300">"OVER"</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cancelación MAYDAY -->
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                    <h3 class="text-xl font-semibold mb-4 text-red-800 flex items-center">
+                        <i class="fas fa-times-circle mr-2"></i>
+                        CANCELACIÓN de MAYDAY - ¡CRÍTICO!
+                    </h3>
+                    
+                    <div class="bg-yellow-100 border-l-4 border-yellow-500 p-4 mb-4">
+                        <p class="text-yellow-800 font-semibold">
+                            ⚠️ FUNDAMENTAL saber cancelar un MAYDAY. La no cancelación genera problemas graves 
+                            y moviliza recursos de socorro innecesariamente.
+                        </p>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                            <h4 class="font-semibold text-blue-800 mb-3 flex items-center">
+                                <i class="fas fa-satellite-dish mr-2"></i>
+                                Si se lanzó por DSC (Botón):
+                            </h4>
+                            <ol class="space-y-2 text-sm">
+                                <li class="flex items-start">
+                                    <span class="bg-blue-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold mr-2 mt-0.5">1</span>
+                                    <span><strong>APAGAR RADIO INMEDIATAMENTE</strong> (detiene retransmisiones automáticas)</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="bg-blue-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold mr-2 mt-0.5">2</span>
+                                    <span>Volver a encender la radio</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="bg-blue-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold mr-2 mt-0.5">3</span>
+                                    <span>Canal 16 a máxima potencia</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="bg-blue-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold mr-2 mt-0.5">4</span>
+                                    <span>Llamada general + identificación</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="bg-blue-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold mr-2 mt-0.5">5</span>
+                                    <span>"CANCEL MY MAYDAY de hoy [fecha] a las [hora UTC]"</span>
+                                </li>
+                            </ol>
+                            
+                            <div class="mt-3 bg-white p-3 rounded font-mono text-xs border">
+                                "ALL STATIONS, ALL STATIONS, ALL STATIONS<br>
+                                THIS IS POSEIDÓN, POSEIDÓN, POSEIDÓN, MMSI 224123456<br>
+                                CANCEL MY MAYDAY de hoy 15 marzo a las 14:30 UTC<br>
+                                POSEIDÓN, EA3ABC, 224123456"
+                            </div>
+                        </div>
+                        
+                        <div class="bg-orange-50 p-4 rounded-lg border border-orange-200">
+                            <h4 class="font-semibold text-orange-800 mb-3 flex items-center">
+                                <i class="fas fa-satellite mr-2"></i>
+                                Si se activó EPIRB (Radiobaliza):
+                            </h4>
+                            <div class="space-y-3 text-sm">
+                                <div class="bg-orange-100 p-3 rounded">
+                                    <p class="font-semibold text-orange-800">Acción inmediata:</p>
+                                    <p>Contactar directamente con la estación costera más cercana</p>
+                                </div>
+                                
+                                <div class="bg-white p-3 rounded border">
+                                    <p class="font-semibold mb-2">Informar:</p>
+                                    <ul class="space-y-1">
+                                        <li>• La radiobaliza se activó (posiblemente por error)</li>
+                                        <li>• Posible causa (zona que se mojó, etc.)</li>
+                                        <li>• Deseo de cancelar el MAYDAY inmediatamente</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Checklist MAYDAY -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-semibold mb-4 text-red-800 flex items-center">
+                        <i class="fas fa-clipboard-check mr-2"></i>
+                        Checklist MAYDAY - ¡VITAL!
+                    </h3>
+                    
+                    <div class="grid md:grid-cols-5 gap-4">
+                        <div>
+                            <h4 class="font-semibold mb-3 text-red-800">Pre-emergencia:</h4>
+                            <div class="space-y-2">
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 h-4 w-4 text-red-600">
+                                    <span class="text-sm">Procedimiento visible</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 h-4 w-4 text-red-600">
+                                    <span class="text-sm">Call Sign conocido</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 h-4 w-4 text-red-600">
+                                    <span class="text-sm">MMSI conocido</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-semibold mb-3 text-red-800">Antes de voz:</h4>
+                            <div class="space-y-2">
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 h-4 w-4 text-red-600">
+                                    <span class="text-sm">Botón DSC si hay tiempo</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 h-4 w-4 text-red-600">
+                                    <span class="text-sm">Canal 16</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 h-4 w-4 text-red-600">
+                                    <span class="text-sm">Máxima potencia</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-semibold mb-3 text-red-800">Llamada:</h4>
+                            <div class="space-y-2">
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 h-4 w-4 text-red-600">
+                                    <span class="text-sm">MAYDAY × 3</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 h-4 w-4 text-red-600">
+                                    <span class="text-sm">THIS IS</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 h-4 w-4 text-red-600">
+                                    <span class="text-sm">Nombre barco × 3</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 h-4 w-4 text-red-600">
+                                    <span class="text-sm">Call Sign + MMSI</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-semibold mb-3 text-red-800">Mensaje:</h4>
+                            <div class="space-y-2">
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 h-4 w-4 text-red-600">
+                                    <span class="text-sm">MAYDAY (repetir)</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 h-4 w-4 text-red-600">
+                                    <span class="text-sm">Identificación</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 h-4 w-4 text-red-600">
+                                    <span class="text-sm">POSICIÓN exacta</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 h-4 w-4 text-red-600">
+                                    <span class="text-sm">Naturaleza socorro</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-semibold mb-3 text-red-800">Finalizar:</h4>
+                            <div class="space-y-2">
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 h-4 w-4 text-red-600">
+                                    <span class="text-sm">POB si es posible</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 h-4 w-4 text-red-600">
+                                    <span class="text-sm">OVER/cambio</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" class="mr-2 h-4 w-4 text-red-600">
+                                    <span class="text-sm">Saber cancelar</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tools Section -->
+            <section id="tools" class="content-section hidden">
+                <h2 class="text-3xl font-bold text-blue-900 mb-6 flex items-center">
+                    <i class="fas fa-tools mr-3"></i>
+                    Herramientas Interactivas
+                </h2>
+                
+                <!-- Channel Calculator -->
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                    <h3 class="text-xl font-semibold mb-4 text-blue-800 flex items-center">
+                        <i class="fas fa-calculator mr-2"></i>
+                        Calculadora de Canales
+                    </h3>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-2">Tipo de comunicación:</label>
+                            <select id="commType" onchange="recommendChannel()" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">Seleccionar tipo...</option>
+                                <option value="costera">Estación Costera</option>
+                                <option value="barco">Barco a Barco</option>
+                                <option value="club">Club Náutico</option>
+                                <option value="mayday">MAYDAY</option>
+                                <option value="panpan">PAN-PAN</option>
+                                <option value="securite">SECURITE</option>
+                            </select>
+                        </div>
+                        
+                        <div id="channelRecommendation" class="bg-blue-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-blue-800 mb-2">Recomendación:</h4>
+                            <p class="text-gray-600">Selecciona un tipo de comunicación para ver la recomendación de canal.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timer -->
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                    <h3 class="text-xl font-semibold mb-4 text-blue-800 flex items-center">
+                        <i class="fas fa-clock mr-2"></i>
+                        Timer de Espera entre Llamadas
+                    </h3>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <p class="text-gray-700 mb-4">
+                                Según el protocolo, si una llamada no es contestada, se debe esperar al menos 2 minutos antes de repetir.
+                            </p>
+                            
+                            <div class="space-y-4">
+                                <button onclick="startTimer()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold flex items-center">
+                                    <i class="fas fa-play mr-2"></i>
+                                    Iniciar Timer (2 min)
+                                </button>
+                                
+                                <button onclick="resetTimer()" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-semibold flex items-center">
+                                    <i class="fas fa-stop mr-2"></i>
+                                    Resetear Timer
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gray-50 p-4 rounded-lg text-center">
+                            <div class="text-6xl font-mono font-bold text-blue-600 mb-2" id="timerDisplay">02:00</div>
+                            <div id="timerStatus" class="text-gray-600">Timer listo</div>
+                            <div id="timerAlert" class="hidden bg-green-100 text-green-800 p-2 rounded mt-2 font-semibold">
+                                ✅ ¡Puedes realizar otra llamada!
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Coordinate Converter -->
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                    <h3 class="text-xl font-semibold mb-4 text-blue-800 flex items-center">
+                        <i class="fas fa-compass mr-2"></i>
+                        Convertidor de Coordenadas
+                    </h3>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <h4 class="font-semibold mb-3">Coordenadas GPS:</h4>
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="block text-gray-700 mb-1">Latitud:</label>
+                                    <input type="text" id="latitude" placeholder="38.3652" class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                </div>
+                                <div>
+                                    <label class="block text-gray-700 mb-1">Longitud:</label>
+                                    <input type="text" id="longitude" placeholder="0.4907" class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                </div>
+                                <button onclick="convertCoordinates()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold">
+                                    Convertir
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-semibold mb-3">Formato para Radio:</h4>
+                            <div id="coordinateResult" class="bg-gray-50 p-4 rounded-lg">
+                                <p class="text-gray-600">Introduce las coordenadas para ver el formato adecuado para transmisión por radio.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Call Simulator -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-semibold mb-4 text-blue-800 flex items-center">
+                        <i class="fas fa-microphone-alt mr-2"></i>
+                        Simulador de Llamadas
+                    </h3>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-2">Tipo de simulación:</label>
+                            <select id="simType" onchange="loadSimulation()" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">Seleccionar simulación...</option>
+                                <option value="rutina-costera">Rutina - Estación Costera</option>
+                                <option value="rutina-barco">Rutina - Barco a Barco</option>
+                                <option value="securite">SECURITE</option>
+                                <option value="panpan">PAN-PAN</option>
+                                <option value="mayday">MAYDAY</option>
+                            </select>
+                            
+                            <div id="simControls" class="hidden mt-4 space-y-2">
+                                <button onclick="prevStep()" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg">
+                                    <i class="fas fa-chevron-left mr-1"></i> Anterior
+                                </button>
+                                <button onclick="nextStep()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+                                    Siguiente <i class="fas fa-chevron-right ml-1"></i>
+                                </button>
+                                <button onclick="resetSimulation()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg">
+                                    <i class="fas fa-redo mr-1"></i> Reiniciar
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div id="simulationContent" class="bg-gray-50 p-4 rounded-lg">
+                            <p class="text-gray-600">Selecciona un tipo de simulación para comenzar el entrenamiento paso a paso.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Reference Section -->
+            <section id="reference" class="content-section hidden">
+                <h2 class="text-3xl font-bold text-blue-900 mb-6 flex items-center">
+                    <i class="fas fa-table mr-3"></i>
+                    Referencia Rápida
+                </h2>
+                
+                <!-- Quick Reference Cards -->
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                    <div class="bg-green-100 border-l-4 border-green-500 p-4 rounded-lg">
+                        <h3 class="font-bold text-green-800 mb-2">Rutina</h3>
+                        <ul class="text-sm space-y-1">
+                            <li>• Canal 16 → trabajo</li>
+                            <li>• Profesional y breve</li>
+                            <li>• "Terminado" al final</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="bg-yellow-100 border-l-4 border-yellow-500 p-4 rounded-lg">
+                        <h3 class="font-bold text-yellow-800 mb-2">SECURITE</h3>
+                        <ul class="text-sm space-y-1">
+                            <li>• Info navegación</li>
+                            <li>• Canal 16 → trabajo</li>
+                            <li>• SECURITE × 3</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="bg-orange-100 border-l-4 border-orange-500 p-4 rounded-lg">
+                        <h3 class="font-bold text-orange-800 mb-2">PAN-PAN</h3>
+                        <ul class="text-sm space-y-1">
+                            <li>• Urgencia sin peligro inmediato</li>
+                            <li>• Mensaje completo en Canal 16</li>
+                            <li>• Posición + naturaleza</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="bg-red-100 border-l-4 border-red-500 p-4 rounded-lg">
+                        <h3 class="font-bold text-red-800 mb-2">MAYDAY</h3>
+                        <ul class="text-sm space-y-1">
+                            <li>• PELIGRO DE VIDA</li>
+                            <li>• DSC + voz</li>
+                            <li>• Procedimiento exacto</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Channel Reference Table -->
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                    <h3 class="text-xl font-semibold mb-4 text-blue-800">Tabla de Canales</h3>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full border-collapse border border-gray-300">
+                            <thead>
+                                <tr class="bg-blue-100">
+                                    <th class="border border-gray-300 p-3 text-left">Canal</th>
+                                    <th class="border border-gray-300 p-3 text-left">Tipo</th>
+                                    <th class="border border-gray-300 p-3 text-left">Uso</th>
+                                    <th class="border border-gray-300 p-3 text-left">Notas</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="border border-gray-300 p-3 font-bold text-red-600">16</td>
+                                    <td class="border border-gray-300 p-3">Simplex</td>
+                                    <td class="border border-gray-300 p-3">Socorro y llamada</td>
+                                    <td class="border border-gray-300 p-3">Escucha constante obligatoria</td>
+                                </tr>
+                                <tr class="bg-gray-50">
+                                    <td class="border border-gray-300 p-3 font-bold">3</td>
+                                    <td class="border border-gray-300 p-3">Dúplex</td>
+                                    <td class="border border-gray-300 p-3">Trabajo con costeras</td>
+                                    <td class="border border-gray-300 p-3">NO para barco a barco</td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-gray-300 p-3 font-bold text-green-600">68</td>
+                                    <td class="border border-gray-300 p-3">Simplex</td>
+                                    <td class="border border-gray-300 p-3">Barco a barco</td>
+                                    <td class="border border-gray-300 p-3">Recomendado</td>
+                                </tr>
+                                <tr class="bg-gray-50">
+                                    <td class="border border-gray-300 p-3 font-bold text-green-600">70</td>
+                                    <td class="border border-gray-300 p-3">Simplex</td>
+                                    <td class="border border-gray-300 p-3">Barco a barco</td>
+                                    <td class="border border-gray-300 p-3">Recomendado</td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-gray-300 p-3 font-bold text-green-600">72</td>
+                                    <td class="border border-gray-300 p-3">Simplex</td>
+                                    <td class="border border-gray-300 p-3">Barco a barco</td>
+                                    <td class="border border-gray-300 p-3">Recomendado</td>
+                                </tr>
+                                <tr class="bg-gray-50">
+                                    <td class="border border-gray-300 p-3 font-bold text-green-600">77</td>
+                                    <td class="border border-gray-300 p-3">Simplex</td>
+                                    <td class="border border-gray-300 p-3">Barco a barco</td>
+                                    <td class="border border-gray-300 p-3">Recomendado</td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-gray-300 p-3 font-bold text-green-600">78</td>
+                                    <td class="border border-gray-300 p-3">Simplex</td>
+                                    <td class="border border-gray-300 p-3">Barco a barco</td>
+                                    <td class="border border-gray-300 p-3">Recomendado</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Priority Levels -->
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                    <h3 class="text-xl font-semibold mb-4 text-blue-800">Niveles de Prioridad</h3>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center p-4 bg-red-50 border-l-4 border-red-500 rounded">
+                            <div class="flex-shrink-0 w-8 h-8 bg-red-600 text-white rounded-full flex items-center justify-center font-bold text-sm mr-4">1</div>
+                            <div>
+                                <h4 class="font-bold text-red-800">MAYDAY - Socorro</h4>
+                                <p class="text-red-700 text-sm">Peligro grave e inminente para la vida o embarcación</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center p-4 bg-orange-50 border-l-4 border-orange-500 rounded">
+                            <div class="flex-shrink-0 w-8 h-8 bg-orange-600 text-white rounded-full flex items-center justify-center font-bold text-sm mr-4">2</div>
+                            <div>
+                                <h4 class="font-bold text-orange-800">PAN-PAN - Urgencia</h4>
+                                <p class="text-orange-700 text-sm">Situación urgente que requiere atención inmediata</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center p-4 bg-yellow-50 border-l-4 border-yellow-500 rounded">
+                            <div class="flex-shrink-0 w-8 h-8 bg-yellow-600 text-white rounded-full flex items-center justify-center font-bold text-sm mr-4">3</div>
+                            <div>
+                                <h4 class="font-bold text-yellow-800">SECURITE - Seguridad</h4>
+                                <p class="text-yellow-700 text-sm">Información importante para la navegación</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center p-4 bg-green-50 border-l-4 border-green-500 rounded">
+                            <div class="flex-shrink-0 w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center font-bold text-sm mr-4">4</div>
+                            <div>
+                                <h4 class="font-bold text-green-800">Rutina</h4>
+                                <p class="text-green-700 text-sm">Comunicaciones normales de información general</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Common Phrases -->
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-semibold mb-4 text-blue-800">Frases Comunes</h3>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <h4 class="font-semibold mb-3 text-blue-800">Inicios de comunicación:</h4>
+                            <div class="space-y-2 text-sm">
+                                <div class="bg-gray-100 p-2 rounded font-mono">
+                                    "[Destinatario], [Destinatario], aquí [Barco], [Barco], cambio"
+                                </div>
+                                <div class="bg-red-100 p-2 rounded font-mono">
+                                    "MAYDAY, MAYDAY, MAYDAY"
+                                </div>
+                                <div class="bg-orange-100 p-2 rounded font-mono">
+                                    "PAN-PAN, PAN-PAN, PAN-PAN"
+                                </div>
+                                <div class="bg-yellow-100 p-2 rounded font-mono">
+                                    "SECURITE, SECURITE, SECURITE"
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-semibold mb-3 text-blue-800">Finalizaciones:</h4>
+                            <div class="space-y-2 text-sm">
+                                <div class="bg-gray-100 p-2 rounded">
+                                    <strong>cambio:</strong> Para dar la palabra al otro
+                                </div>
+                                <div class="bg-gray-100 p-2 rounded">
+                                    <strong>terminado:</strong> Para finalizar comunicación
+                                </div>
+                                <div class="bg-gray-100 p-2 rounded">
+                                    <strong>OVER:</strong> En inglés para dar la palabra
+                                </div>
+                                <div class="bg-red-100 p-2 rounded">
+                                    <strong>NUNCA usar "corto":</strong> No tiene sentido en protocolo marítimo
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Glossary Section -->
+            <section id="glossary" class="content-section hidden">
+                <h2 class="text-3xl font-bold text-blue-900 mb-6 flex items-center">
+                    <i class="fas fa-book mr-3"></i>
+                    Glosario de Términos
+                </h2>
+                
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-4">
+                            <div class="border-b pb-3">
+                                <h4 class="font-bold text-blue-800">Call Sign</h4>
+                                <p class="text-gray-700 text-sm">Distintivo de llamada único de la embarcación, similar a una matrícula.</p>
+                            </div>
+                            
+                            <div class="border-b pb-3">
+                                <h4 class="font-bold text-blue-800">Canal Dúplex</h4>
+                                <p class="text-gray-700 text-sm">Canal con dos frecuencias (transmisión y recepción). Solo funciona con estaciones costeras.</p>
+                            </div>
+                            
+                            <div class="border-b pb-3">
+                                <h4 class="font-bold text-blue-800">Canal Simplex</h4>
+                                <p class="text-gray-700 text-sm">Canal con una sola frecuencia. Adecuado para comunicación barco a barco.</p>
+                            </div>
+                            
+                            <div class="border-b pb-3">
+                                <h4 class="font-bold text-blue-800">DSC (Digital Selective Calling)</h4>
+                                <p class="text-gray-700 text-sm">Llamada Selectiva Digital. Sistema automático de alerta de socorro.</p>
+                            </div>
+                            
+                            <div class="border-b pb-3">
+                                <h4 class="font-bold text-blue-800">EPIRB</h4>
+                                <p class="text-gray-700 text-sm">Radiobaliza satelital de emergencia que se activa automáticamente.</p>
+                            </div>
+                            
+                            <div class="border-b pb-3">
+                                <h4 class="font-bold text-blue-800">MMSI</h4>
+                                <p class="text-gray-700 text-sm">Mobile Maritime Service Identity. Número único de identificación de la radio.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="border-b pb-3">
+                                <h4 class="font-bold text-blue-800">POB (Persons On Board)</h4>
+                                <p class="text-gray-700 text-sm">Personas a bordo. Información crítica en emergencias.</p>
+                            </div>
+                            
+                            <div class="border-b pb-3">
+                                <h4 class="font-bold text-blue-800">Demora</h4>
+                                <p class="text-gray-700 text-sm">Ángulo horizontal desde un punto de referencia hasta el objetivo.</p>
+                            </div>
+                            
+                            <div class="border-b pb-3">
+                                <h4 class="font-bold text-blue-800">Estación Costera</h4>
+                                <p class="text-gray-700 text-sm">Estación de radio en tierra que proporciona servicios a embarcaciones.</p>
+                            </div>
+                            
+                            <div class="border-b pb-3">
+                                <h4 class="font-bold text-blue-800">Canal de Trabajo</h4>
+                                <p class="text-gray-700 text-sm">Canal específico para transmitir el mensaje después de establecer contacto en Canal 16.</p>
+                            </div>
+                            
+                            <div class="border-b pb-3">
+                                <h4 class="font-bold text-blue-800">UTC</h4>
+                                <p class="text-gray-700 text-sm">Tiempo Universal Coordinado. Hora estándar internacional para comunicaciones marítimas.</p>
+                            </div>
+                            
+                            <div class="border-b pb-3">
+                                <h4 class="font-bold text-blue-800">VHF</h4>
+                                <p class="text-gray-700 text-sm">Very High Frequency. Banda de frecuencias para comunicaciones marítimas de corto alcance.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Global variables
+        let currentSection = 'rutina';
+        let timerInterval;
+        let timerSeconds = 120;
+        let currentSimulation = null;
+        let currentStep = 0;
+
+        // Navigation functions
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.remove('hidden');
+            
+            // Update navigation buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('nav-active');
+            });
+            
+            event.target.classList.add('nav-active');
+            currentSection = sectionId;
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('-translate-x-full');
+        }
+
+        // Search functionality
+        function setupSearch() {
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('input', function(e) {
+                const query = e.target.value.toLowerCase();
+                if (query.length < 2) {
+                    clearSearch();
+                    return;
+                }
+                
+                // Search through content
+                const sections = document.querySelectorAll('.content-section');
+                let found = false;
+                
+                sections.forEach(section => {
+                    const content = section.textContent.toLowerCase();
+                    if (content.includes(query)) {
+                        // Highlight matching section
+                        if (!found) {
+                            showSection(section.id);
+                            found = true;
+                        }
+                    }
+                });
+            });
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+        }
+
+        // Channel recommendation
+        function recommendChannel() {
+            const commType = document.getElementById('commType').value;
+            const recommendation = document.getElementById('channelRecommendation');
+            
+            let content = '';
+            
+            switch(commType) {
+                case 'costera':
+                    content = `
+                        <h4 class="font-semibold text-blue-800 mb-2">Estación Costera:</h4>
+                        <p class="text-sm mb-2"><strong>Inicio:</strong> Canal 16</p>
+                        <p class="text-sm mb-2"><strong>Trabajo:</strong> Canal asignado por la costera (ej. Canal 3)</p>
+                        <div class="bg-blue-100 p-2 rounded text-xs">
+                            La costera te indicará el canal de trabajo después del contacto inicial.
+                        </div>
+                    `;
+                    break;
+                case 'barco':
+                    content = `
+                        <h4 class="font-semibold text-green-800 mb-2">Barco a Barco:</h4>
+                        <p class="text-sm mb-2"><strong>Canales recomendados:</strong></p>
+                        <div class="text-xs space-y-1">
+                            <div>• Canal 68 (recomendado)</div>
+                            <div>• Canal 70</div>
+                            <div>• Canal 72</div>
+                            <div>• Canal 77</div>
+                            <div>• Canal 78</div>
+                        </div>
+                        <div class="bg-red-100 p-2 rounded text-xs mt-2">
+                            ⚠️ NO usar Canal 16 ni canales dúplex
+                        </div>
+                    `;
+                    break;
+                case 'club':
+                    content = `
+                        <h4 class="font-semibold text-blue-800 mb-2">Club Náutico:</h4>
+                        <p class="text-sm mb-2"><strong>Inicio:</strong> Canal 16</p>
+                        <p class="text-sm mb-2"><strong>Trabajo:</strong> Canal asignado por el club</p>
+                        <div class="bg-blue-100 p-2 rounded text-xs">
+                            Mismo procedimiento que estación costera.
+                        </div>
+                    `;
+                    break;
+                case 'mayday':
+                    content = `
+                        <h4 class="font-semibold text-red-800 mb-2">MAYDAY:</h4>
+                        <p class="text-sm mb-2"><strong>Canal:</strong> 16 únicamente</p>
+                        <p class="text-sm mb-2"><strong>Potencia:</strong> Máxima (25W)</p>
+                        <div class="bg-red-100 p-2 rounded text-xs">
+                            Todo el mensaje se transmite en Canal 16. No cambiar de canal.
+                        </div>
+                    `;
+                    break;
+                case 'panpan':
+                    content = `
+                        <h4 class="font-semibold text-orange-800 mb-2">PAN-PAN:</h4>
+                        <p class="text-sm mb-2"><strong>Canal:</strong> 16 únicamente</p>
+                        <p class="text-sm mb-2"><strong>Potencia:</strong> Máxima (25W)</p>
+                        <div class="bg-orange-100 p-2 rounded text-xs">
+                            Todo el mensaje se transmite en Canal 16. No cambiar de canal.
+                        </div>
+                    `;
+                    break;
+                case 'securite':
+                    content = `
+                        <h4 class="font-semibold text-yellow-800 mb-2">SECURITE:</h4>
+                        <p class="text-sm mb-2"><strong>Inicio:</strong> Canal 16</p>
+                        <p class="text-sm mb-2"><strong>Trabajo:</strong> Canal asignado por costera</p>
+                        <div class="bg-yellow-100 p-2 rounded text-xs">
+                            Llamada inicial en 16, luego pasar a canal de trabajo para el aviso completo.
+                        </div>
+                    `;
+                    break;
+                default:
+                    content = '<p class="text-gray-600">Selecciona un tipo de comunicación para ver la recomendación de canal.</p>';
+            }
+            
+            recommendation.innerHTML = content;
+        }
+
+        // Timer functions
+        function startTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            
+            timerSeconds = 120;
+            document.getElementById('timerStatus').textContent = 'Timer en marcha...';
+            document.getElementById('timerAlert').classList.add('hidden');
+            
+            timerInterval = setInterval(() => {
+                timerSeconds--;
+                updateTimerDisplay();
+                
+                if (timerSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById('timerStatus').textContent = '¡Timer finalizado!';
+                    document.getElementById('timerAlert').classList.remove('hidden');
+                }
+            }, 1000);
+        }
+
+        function resetTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            timerSeconds = 120;
+            updateTimerDisplay();
+            document.getElementById('timerStatus').textContent = 'Timer listo';
+            document.getElementById('timerAlert').classList.add('hidden');
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timerSeconds / 60);
+            const seconds = timerSeconds % 60;
+            document.getElementById('timerDisplay').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function openTimer() {
+            showSection('tools');
+        }
+
+        // Coordinate converter
+        function convertCoordinates() {
+            const lat = parseFloat(document.getElementById('latitude').value);
+            const lon = parseFloat(document.getElementById('longitude').value);
+            
+            if (isNaN(lat) || isNaN(lon)) {
+                document.getElementById('coordinateResult').innerHTML = 
+                    '<p class="text-red-600">Por favor, introduce coordenadas válidas.</p>';
+                return;
+            }
+            
+            // Convert to degrees, minutes format
+            const latDeg = Math.floor(Math.abs(lat));
+            const latMin = (Math.abs(lat) - latDeg) * 60;
+            const latDir = lat >= 0 ? 'N' : 'S';
+            
+            const lonDeg = Math.floor(Math.abs(lon));
+            const lonMin = (Math.abs(lon) - lonDeg) * 60;
+            const lonDir = lon >= 0 ? 'E' : 'W';
+            
+            const result = `
+                <div class="space-y-2">
+                    <div>
+                        <strong>Formato para radio:</strong>
+                    </div>
+                    <div class="bg-blue-100 p-3 rounded font-mono text-sm">
+                        Latitud: ${latDeg}° ${latMin.toFixed(2)}' ${latDir}<br>
+                        Longitud: ${lonDeg}° ${lonMin.toFixed(2)}' ${lonDir}
+                    </div>
+                    <div class="text-xs text-gray-600">
+                        Pronunciar claramente y repetir si es necesario
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('coordinateResult').innerHTML = result;
+        }
+
+        // Simulation functions
+        const simulations = {
+            'rutina-costera': {
+                title: 'Llamada de Rutina - Estación Costera',
+                steps: [
+                    {
+                        title: 'Paso 1: Preparación',
+                        content: 'Sintoniza Canal 16 y escucha durante 1-2 minutos para verificar que esté libre.',
+                        action: 'Verificar que el canal esté libre'
+                    },
+                    {
+                        title: 'Paso 2: Llamada inicial',
+                        content: '"Ibiza Radio, Ibiza Radio, aquí Poseidón, Poseidón, cambio"',
+                        action: 'Transmitir llamada inicial'
+                    },
+                    {
+                        title: 'Paso 3: Respuesta esperada',
+                        content: 'La costera responderá: "Poseidón, Poseidón, aquí Ibiza Radio, pase al canal 3, cambio"',
+                        action: 'Esperar respuesta de la costera'
+                    },
+                    {
+                        title: 'Paso 4: Cambio de canal',
+                        content: 'Cambiar a Canal 3 (canal de trabajo asignado)',
+                        action: 'Sintonizar Canal 3'
+                    },
+                    {
+                        title: 'Paso 5: Reestablecer comunicación',
+                        content: '"Ibiza Radio, Ibiza Radio, aquí Poseidón, Poseidón, cambio"',
+                        action: 'Confirmar comunicación en nuevo canal'
+                    },
+                    {
+                        title: 'Paso 6: Transmitir mensaje',
+                        content: '"Quería hacer una prueba radio, cambio"',
+                        action: 'Enviar el mensaje'
+                    },
+                    {
+                        title: 'Paso 7: Finalizar',
+                        content: '"Ibiza Radio, muchas gracias, Poseidón, terminado"',
+                        action: 'Terminar la comunicación'
+                    }
+                ]
+            },
+            'mayday': {
+                title: 'Mensaje MAYDAY - Socorro',
+                steps: [
+                    {
+                        title: 'Paso 1: DSC (si hay tiempo)',
+                        content: 'Pulsar botón de socorro DSC durante 4 segundos. Seleccionar tipo de emergencia si es posible.',
+                        action: 'Activar alerta DSC'
+                    },
+                    {
+                        title: 'Paso 2: Preparación radio',
+                        content: 'Canal 16, máxima potencia (25W)',
+                        action: 'Configurar radio para emergencia'
+                    },
+                    {
+                        title: 'Paso 3: Llamada de socorro',
+                        content: '"MAYDAY, MAYDAY, MAYDAY\nTHIS IS\nPOSEIDÓN, POSEIDÓN, POSEIDÓN\n[Call Sign]\n[MMSI]"',
+                        action: 'Transmitir llamada de socorro'
+                    },
+                    {
+                        title: 'Paso 4: Mensaje de socorro',
+                        content: '"MAYDAY\nPOSEIDÓN, [Call Sign], [MMSI]\ndemora 68 grados, Cabo de la Nao, distancia 8.5 millas náuticas\nincendio a bordo\n3 personas a bordo\nOVER"',
+                        action: 'Transmitir información de emergencia'
+                    },
+                    {
+                        title: 'Paso 5: Esperar respuesta',
+                        content: 'Mantener escucha en Canal 16. Repetir el mensaje si no hay respuesta inmediata.',
+                        action: 'Aguardar instrucciones de rescate'
+                    }
+                ]
+            }
+        };
+
+        function loadSimulation() {
+            const simType = document.getElementById('simType').value;
+            if (!simType || !simulations[simType]) {
+                document.getElementById('simulationContent').innerHTML = 
+                    '<p class="text-gray-600">Selecciona un tipo de simulación para comenzar el entrenamiento paso a paso.</p>';
+                document.getElementById('simControls').classList.add('hidden');
+                return;
+            }
+            
+            currentSimulation = simulations[simType];
+            currentStep = 0;
+            document.getElementById('simControls').classList.remove('hidden');
+            updateSimulationDisplay();
+        }
+
+        function updateSimulationDisplay() {
+            if (!currentSimulation) return;
+            
+            const step = currentSimulation.steps[currentStep];
+            const content = `
+                <div class="bg-white p-4 rounded border-l-4 ${currentStep === 0 ? 'border-blue-500' : 'border-gray-300'}">
+                    <h4 class="font-semibold text-blue-800 mb-2">${currentSimulation.title}</h4>
+                    <h5 class="font-semibold text-gray-800 mb-2">${step.title}</h5>
+                    <p class="text-gray-700 mb-3">${step.content}</p>
+                    <div class="bg-blue-50 p-2 rounded text-sm">
+                        <strong>Acción:</strong> ${step.action}
+                    </div>
+                    <div class="mt-3 text-xs text-gray-500">
+                        Paso ${currentStep + 1} de ${currentSimulation.steps.length}
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('simulationContent').innerHTML = content;
+        }
+
+        function nextStep() {
+            if (!currentSimulation || currentStep >= currentSimulation.steps.length - 1) return;
+            currentStep++;
+            updateSimulationDisplay();
+        }
+
+        function prevStep() {
+            if (!currentSimulation || currentStep <= 0) return;
+            currentStep--;
+            updateSimulationDisplay();
+        }
+
+        function resetSimulation() {
+            currentStep = 0;
+            if (currentSimulation) {
+                updateSimulationDisplay();
+            }
+        }
+
+        // Initialize application
+        document.addEventListener('DOMContentLoaded', function() {
+            setupSearch();
+            showSection('rutina');
+            
+            // Set up navigation buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    const sectionId = this.getAttribute('onclick').match(/'([^']+)'/)[1];
+                    showSection(sectionId);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
